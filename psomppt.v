@@ -108,11 +108,13 @@ module pso_mppt_top (
     reg [7:0] pwm_cnt;
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pwm_cnt <= 0;
-            pwm_out <= 0;
+            pwm_cnt <= 8'd0;
+            pwm_out <= 1'b0;
         end else begin
             pwm_cnt <= pwm_cnt + 8'd1;
-            pwm_out <= (pwm_cnt < gbest_pos) ? 1'b1 : 1'b0;
+            // 关键点：将 pos[p_idx] 作为当前占空比
+            // 这样当状态机切换 p_idx 时，物理电路的电压电流才会随之改变
+            pwm_out <= (pwm_cnt < pos[p_idx]) ? 1'b1 : 1'b0;
         end
     end
 
